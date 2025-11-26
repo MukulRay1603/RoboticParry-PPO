@@ -373,40 +373,63 @@ class SamuraiParryEnv(gym.Env):
 
     # ------------- Opponent attack scripting -------------
 
-    def _init_opponent_attack(self) -> None:
+    def _init_opponent_attack(self):
+        """Initialize clean diagonal left/right kesa slashes.
+        Sword orientation is FIXED. Only joints move to produce arcs.
         """
-        Initialize a keyframed opponent attack consisting of
-        wind-up -> strike -> recover keyframes in joint space.
-        """
+
         base_pose = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5])
 
-        # Three canonical attack types with windup/strike/recover
-        # Overhead: raise sword above, then cut down in front, then recover.
-        overhead_windup = base_pose + np.array([0.0, -0.5, 0.0, -0.8, 0.0, 0.3, 0.0])
-        overhead_strike = base_pose + np.array([0.0, -0.9, 0.0, -0.2, 0.25, 0.15, 0.0])
-        overhead_recover = base_pose
+        # --- B) LEFT DIAGONAL KESA CUT (from high right → low left) ---
+        left_windup = base_pose + np.array([
+            0.65,   # shoulder pan to right
+            -0.55,  # raise arm
+            0.55,   # elbow outward
+            -0.65,  # wrist back
+            -0.45,  # wrist roll
+            0.25,   # wrist lift
+            0.0,
+        ])
+        left_strike = base_pose + np.array([
+            0.05,
+            -0.95,
+            0.1,
+            -0.25,
+            -1.05,
+            0.05,
+            0.0,
+        ])
+        left_recover = base_pose
 
-        # Left diagonal cut
-        side_left_windup = base_pose + np.array([0.45, -0.1, 0.4, -0.4, -0.25, 0.25, 0.0])
-        side_left_strike = base_pose + np.array([0.15, -0.5, 0.1, -0.2, -0.8, 0.1, 0.0])
-        side_left_recover = base_pose
+        # --- C) RIGHT DIAGONAL KESA CUT (mirror) ---
+        right_windup = base_pose + np.array([
+            -0.65,
+            -0.55,
+            -0.55,
+            -0.65,
+            0.45,
+            0.25,
+            0.0,
+        ])
+        right_strike = base_pose + np.array([
+            -0.05,
+            -0.95,
+            -0.1,
+            -0.25,
+            1.05,
+            0.05,
+            0.0,
+        ])
+        right_recover = base_pose
 
-        # Right diagonal cut (mirror of left)
-        side_right_windup = base_pose + np.array([-0.45, -0.1, -0.4, -0.4, 0.25, 0.25, 0.0])
-        side_right_strike = base_pose + np.array([-0.15, -0.5, -0.1, -0.2, 0.8, 0.1, 0.0])
-        side_right_recover = base_pose
-
-        attack_library = [
-            [overhead_windup, overhead_strike, overhead_recover],
-            [side_left_windup, side_left_strike, side_left_recover],
-            [side_right_windup, side_right_strike, side_right_recover],
+        self.attack_library = [
+            [left_windup, left_strike, left_recover],
+            [right_windup, right_strike, right_recover],
         ]
+        idx = int(self.rng.randint(len(self.attack_library)))
+        self.attack_keyframes = self.attack_library[idx]
 
-        idx = int(self.rng.randint(len(attack_library)))
-        self.attack_keyframes = attack_library[idx]
-
-        # Attack lasts for a fraction of the episode and then a new attack is sampled
-        self.attack_duration_steps = max(50, self.max_steps // 3)
+        self.attack_duration_steps = max(45, self.max_steps // 4)
         self.attack_progress = 0
 
     def _opponent_attack_step(self) -> None:
@@ -456,7 +479,7 @@ class SamuraiParryEnv(gym.Env):
     def _get_joint_state(self, body_id: int) -> Tuple[np.ndarray, np.ndarray]:
         js = p.getJointStates(
             body_id, list(range(self.n_joints)), physicsClientId=self.client_id
-        )
+            )
         q = np.array([s[0] for s in js], dtype=np.float32)
         dq = np.array([s[1] for s in js], dtype=np.float32)
         return q, dq

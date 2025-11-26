@@ -374,11 +374,15 @@ class SamuraiParryEnv(gym.Env):
     # ------------- Opponent attack scripting -------------
 
     def _init_opponent_attack(self):
-        """Initialize clean diagonal left/right kesa slashes.
+        """Initialize clean slashes:
+        - B) left diagonal kesa
+        - C) right diagonal kesa
+        - A) vertical men (overhead)
+        - D) thrust tsuki (straight forward)
         Sword orientation is FIXED. Only joints move to produce arcs.
         """
 
-        base_pose = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5])
+        base_pose = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5], dtype=np.float32)
 
         # --- B) LEFT DIAGONAL KESA CUT (from high right → low left) ---
         left_windup = base_pose + np.array([
@@ -389,19 +393,19 @@ class SamuraiParryEnv(gym.Env):
             -0.45,  # wrist roll
             0.25,   # wrist lift
             0.0,
-        ])
+        ], dtype=np.float32)
         left_strike = base_pose + np.array([
             0.05,
             -0.95,
-            0.1,
+            0.10,
             -0.25,
             -1.05,
             0.05,
             0.0,
-        ])
-        left_recover = base_pose
+        ], dtype=np.float32)
+        left_recover = base_pose.copy()
 
-        # --- C) RIGHT DIAGONAL KESA CUT (mirror) ---
+        # --- C) RIGHT DIAGONAL KESA CUT (mirror of B) ---
         right_windup = base_pose + np.array([
             -0.65,
             -0.55,
@@ -410,25 +414,75 @@ class SamuraiParryEnv(gym.Env):
             0.45,
             0.25,
             0.0,
-        ])
+        ], dtype=np.float32)
         right_strike = base_pose + np.array([
             -0.05,
             -0.95,
-            -0.1,
+            -0.10,
             -0.25,
             1.05,
             0.05,
             0.0,
-        ])
-        right_recover = base_pose
+        ], dtype=np.float32)
+        right_recover = base_pose.copy()
 
+        # --- A) VERTICAL MEN CUT (overhead straight down centreline) ---
+        # Windup: raise sword above head, centered
+        men_windup = base_pose + np.array([
+            0.0,    # keep centered in pan
+            0.20,   # lift a bit (less negative = higher)
+            0.40,   # flex elbow to bring hilt up
+            0.70,   # reduce downward bend, raising hands
+            0.0,
+            0.20,   # slight wrist lift
+            0.0,
+        ], dtype=np.float32)
+        # Strike: drive straight down toward agent head
+        men_strike = base_pose + np.array([
+            0.0,
+            -0.60,  # push down
+            0.10,
+            -0.30,
+            0.0,
+            -0.20,  # small wrist drop
+            0.0,
+        ], dtype=np.float32)
+        men_recover = base_pose.copy()
+
+        # --- D) THRUST TSUKI (straight forward toward centreline) ---
+        # Prep: small retraction
+        tsuki_prep = base_pose + np.array([
+            0.0,
+            0.10,   # bring hands slightly up / back
+            0.30,   # bend elbow
+            0.30,   # open elbow
+            0.0,
+            -0.20,  # tilt wrist a bit
+            0.0,
+        ], dtype=np.float32)
+        # Extend: drive hilt and tip forward along +X
+        tsuki_extend = base_pose + np.array([
+            0.0,
+            -0.10,  # small forward lean
+            -0.30,  # extend elbow
+            -0.40,
+            0.0,
+            -0.10,
+            0.0,
+        ], dtype=np.float32)
+        tsuki_recover = base_pose.copy()
+
+        # Library of attacks: each is [windup, strike, recover]
         self.attack_library = [
-            [left_windup, left_strike, left_recover],
-            [right_windup, right_strike, right_recover],
+            [left_windup, left_strike, left_recover],      # B
+            [right_windup, right_strike, right_recover],   # C
+            [men_windup, men_strike, men_recover],         # A
+            [tsuki_prep, tsuki_extend, tsuki_recover],     # D
         ]
         idx = int(self.rng.randint(len(self.attack_library)))
         self.attack_keyframes = self.attack_library[idx]
 
+        # A single duration used for all attacks for now; can be made per-attack later
         self.attack_duration_steps = max(45, self.max_steps // 4)
         self.attack_progress = 0
 
@@ -446,15 +500,19 @@ class SamuraiParryEnv(gym.Env):
         t_global = float(self.attack_progress) / float(max(1, self.attack_duration_steps - 1))
         t_global = max(0.0, min(1.0, t_global))
 
+        # Cubic ease-in-out for more natural acceleration/deceleration
+        s = t_global
+        s_eased = 3.0 * s * s - 2.0 * s * s * s
+
         # Determine which segment of the attack we are in
-        seg = int(t_global * n_seg)
+        seg = int(s_eased * n_seg)
         if seg >= n_seg:
             seg = n_seg - 1
             local_t = 1.0
         else:
             seg_start = float(seg) / float(n_seg)
             seg_end = float(seg + 1) / float(n_seg)
-            local_t = (t_global - seg_start) / max(1e-6, (seg_end - seg_start))
+            local_t = (s_eased - seg_start) / max(1e-6, (seg_end - seg_start))
 
         q_start = np.array(kfs[seg], dtype=np.float32)
         q_end = np.array(kfs[seg + 1], dtype=np.float32)
@@ -473,7 +531,6 @@ class SamuraiParryEnv(gym.Env):
         if self.attack_progress >= self.attack_duration_steps:
             # Start a new swing once the current one finishes
             self._init_opponent_attack()
-
     # ------------- Observation & Reward -------------
 
     def _get_joint_state(self, body_id: int) -> Tuple[np.ndarray, np.ndarray]:
