@@ -50,6 +50,7 @@ We use  **UV** for a clean and stable virtual environment.
 
 
 
+
  ### 1️⃣ Install UV
 
 
@@ -58,9 +59,10 @@ We use  **UV** for a clean and stable virtual environment.
 pip install uv
 ```
 
-
-
-
+1. Clone this repository
+2. setup uv outside the folder
+3. cd samurai project while in uv
+   
 
  ### 2️⃣ Create environment (Python 3.10 required)
 
