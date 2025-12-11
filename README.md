@@ -4,13 +4,13 @@
 
 
 
-Samurai-Reflex-RL is a robotics project exploring  * *defensive reflex learning * * using reinforcement learning (PPO) inside a custom PyBullet simulation.  
+Samurai-Reflex-RL is a robotics project exploring  **defensive reflex learning ** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
 
-A 7-DOF robotic arm learns to  * *detect, react, and parry * * incoming sword attacks from an opponent robot using continuous control.
+A 7-DOF robotic arm learns to  **detect, react and parry ** incoming sword attacks from an opponent robot using continuous control.
 
 
 
-This repository contains the full environment, training code, evaluation pipeline, and reproducible setup scripts.
+This repository contains the full environment, training code, evaluation pipeline and reproducible setup scripts.
 
 
 
@@ -21,26 +21,19 @@ This repository contains the full environment, training code, evaluation pipelin
  ## ✨ Features
 
 
-- 🗡️  * *Scripted opponent attack model * * with curved Bézier sword arcs  
+- 🗡️  **Scripted opponent attack model ** with curved Bézier sword arcs  
 
-- 🛡️  * *PPO-trained defensive policy * * that learns parry reflexes  
+- 🛡️  **PPO-trained defensive policy **  that learns parry reflexes  
 
-- 🔁  * *Cooldown-based parry detection metric * * (fixes false positives)  
+- 🔁  **Cooldown-based parry detection metric ** (fixes false positives)  
 
-- 📊 Automatic  * *evaluation graphs * *: rewards, parries, distributions  
+- 📊 Automatic  **evaluation graphs **: rewards, parries, distributions  
 
-- 🧪  * *Deterministic evaluation * * over 50 episodes  
+- 🧪  **Deterministic evaluation ** over 50 episodes  
 
-- ⚙️ Fully reproducible  * *UV-powered Python 3.10 environment * *  
+- ⚙️ Fully reproducible  **UV-powered Python 3.10 environment **  
 
 - 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
-
-
-
----
-
-
-
 
 
 ---
@@ -51,9 +44,9 @@ This repository contains the full environment, training code, evaluation pipelin
 
 
 
-This project uses  * *Python 3.10 * * because PyBullet wheels do not support 3.11+.  
+This project uses  **Python 3.10 ** because PyBullet wheels do not support 3.11+.  
 
-We use  * *UV * * for a clean and stable virtual environment.
+We use   **UV  ** for a clean and stable virtual environment.
 
 
 
@@ -62,13 +55,7 @@ We use  * *UV * * for a clean and stable virtual environment.
 
 
 ```bash
-
-
-
 pip install uv
-
-
-
 ```
 
 
@@ -78,9 +65,7 @@ pip install uv
  ### 2️⃣ Create environment (Python 3.10 required)
 
 ```bash
-
 uv venv samurai _rl --python 3.10
-
 ```
 
 
@@ -90,13 +75,7 @@ If you have a global path for python version above 3.10, (ie. 3.11 and above use
 
 
 ```bash
-
-
-
 py -3.11 -m uv venv samurai _rl --python 3.10
-
-
-
 ```
 
 
@@ -106,9 +85,7 @@ py -3.11 -m uv venv samurai _rl --python 3.10
 
 
 ```bash
-
 .  samurai _rl  Scripts  Activate.ps1
-
 ```
 
 
@@ -128,8 +105,6 @@ pip install "stable-baselines3 [extra]==2.2.1"
 pip install https://github.com/bulletphysics/bullet3/releases/download/3.25/pybullet-3.25-cp310-cp310-win _amd64.whl
 
 pip install matplotlib numpy
-
-
 
 ```
 
@@ -210,8 +185,6 @@ Parry rate: 100%
 
 python train.py
 
-
-
 ```
 
 
@@ -241,7 +214,6 @@ This will:
 ```bash
 
 python evaluate.py
-
 
 ```
 
@@ -287,15 +259,3 @@ Total hits: 0
 
 
 ---
-
-
-
- # 🚀 Future Work
-
-
-
-* Multi-agent adversarial RL (opponent learns too)
-* Timing-based parry scoring
-* Transition to MuJoCo or IsaacGym
-* Real-time perception system
-* Domain randomization for sim-to-real transfer
