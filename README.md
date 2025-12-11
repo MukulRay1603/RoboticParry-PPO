@@ -4,9 +4,9 @@
 
 
 
-Samurai-Reflex-RL is a robotics project exploring  **defensive reflex learning ** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
+Samurai-Reflex-RL is a robotics project exploring  **defensive reflex learning** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
 
-A 7-DOF robotic arm learns to  **detect, react and parry ** incoming sword attacks from an opponent robot using continuous control.
+A 7-DOF robotic arm learns to  **detect, react and parry** incoming sword attacks from an opponent robot using continuous control.
 
 
 
