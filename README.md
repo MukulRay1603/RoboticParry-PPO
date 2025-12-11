@@ -207,7 +207,7 @@ This will:
 
 
 
- *Use event-based parry metric: *
+ *Use event-based parry metric:*
 
 
 
