@@ -4,6 +4,9 @@ import numpy as np
 import pybullet as p
 import pybullet_data
 import time
+from sword_utils import get_sword_tip_position, get_sword_tip_and_direction, compute_sword_angle
+from reward_engine import compute_reward_and_done_advanced
+
 from typing import Optional, Tuple, Dict, Any
 
 
@@ -76,6 +79,7 @@ class SamuraiParryEnv(gym.Env):
 
         # For motion bonus
         self._prev_agent_tip: Optional[np.ndarray] = None
+        self._prev_opp_tip: Optional[np.ndarray] = None
 
         # Observations: [agent_q(7), agent_dq(7), agent_sword_tip_xyz(3),
         #                opp_sword_tip_xyz(3), dist_to_base(1), time_fraction(1)]
@@ -275,6 +279,7 @@ class SamuraiParryEnv(gym.Env):
 
         # Reset motion bonus state
         self._prev_agent_tip = None
+        self._prev_opp_tip = None
 
         # Initialize a new opponent attack
         self._init_opponent_attack()
@@ -374,15 +379,11 @@ class SamuraiParryEnv(gym.Env):
     # ------------- Opponent attack scripting -------------
 
     def _init_opponent_attack(self):
-        """Initialize clean slashes:
-        - B) left diagonal kesa
-        - C) right diagonal kesa
-        - A) vertical men (overhead)
-        - D) thrust tsuki (straight forward)
+        """Initialize clean diagonal left/right kesa slashes.
         Sword orientation is FIXED. Only joints move to produce arcs.
         """
 
-        base_pose = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5], dtype=np.float32)
+        base_pose = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5])
 
         # --- B) LEFT DIAGONAL KESA CUT (from high right → low left) ---
         left_windup = base_pose + np.array([
@@ -393,19 +394,19 @@ class SamuraiParryEnv(gym.Env):
             -0.45,  # wrist roll
             0.25,   # wrist lift
             0.0,
-        ], dtype=np.float32)
+        ])
         left_strike = base_pose + np.array([
             0.05,
             -0.95,
-            0.10,
+            0.1,
             -0.25,
             -1.05,
             0.05,
             0.0,
-        ], dtype=np.float32)
-        left_recover = base_pose.copy()
+        ])
+        left_recover = base_pose
 
-        # --- C) RIGHT DIAGONAL KESA CUT (mirror of B) ---
+        # --- C) RIGHT DIAGONAL KESA CUT (mirror) ---
         right_windup = base_pose + np.array([
             -0.65,
             -0.55,
@@ -414,75 +415,25 @@ class SamuraiParryEnv(gym.Env):
             0.45,
             0.25,
             0.0,
-        ], dtype=np.float32)
+        ])
         right_strike = base_pose + np.array([
             -0.05,
             -0.95,
-            -0.10,
+            -0.1,
             -0.25,
             1.05,
             0.05,
             0.0,
-        ], dtype=np.float32)
-        right_recover = base_pose.copy()
+        ])
+        right_recover = base_pose
 
-        # --- A) VERTICAL MEN CUT (overhead straight down centreline) ---
-        # Windup: raise sword above head, centered
-        men_windup = base_pose + np.array([
-            0.0,    # keep centered in pan
-            0.20,   # lift a bit (less negative = higher)
-            0.40,   # flex elbow to bring hilt up
-            0.70,   # reduce downward bend, raising hands
-            0.0,
-            0.20,   # slight wrist lift
-            0.0,
-        ], dtype=np.float32)
-        # Strike: drive straight down toward agent head
-        men_strike = base_pose + np.array([
-            0.0,
-            -0.60,  # push down
-            0.10,
-            -0.30,
-            0.0,
-            -0.20,  # small wrist drop
-            0.0,
-        ], dtype=np.float32)
-        men_recover = base_pose.copy()
-
-        # --- D) THRUST TSUKI (straight forward toward centreline) ---
-        # Prep: small retraction
-        tsuki_prep = base_pose + np.array([
-            0.0,
-            0.10,   # bring hands slightly up / back
-            0.30,   # bend elbow
-            0.30,   # open elbow
-            0.0,
-            -0.20,  # tilt wrist a bit
-            0.0,
-        ], dtype=np.float32)
-        # Extend: drive hilt and tip forward along +X
-        tsuki_extend = base_pose + np.array([
-            0.0,
-            -0.10,  # small forward lean
-            -0.30,  # extend elbow
-            -0.40,
-            0.0,
-            -0.10,
-            0.0,
-        ], dtype=np.float32)
-        tsuki_recover = base_pose.copy()
-
-        # Library of attacks: each is [windup, strike, recover]
         self.attack_library = [
-            [left_windup, left_strike, left_recover],      # B
-            [right_windup, right_strike, right_recover],   # C
-            [men_windup, men_strike, men_recover],         # A
-            [tsuki_prep, tsuki_extend, tsuki_recover],     # D
+            [left_windup, left_strike, left_recover],
+            [right_windup, right_strike, right_recover],
         ]
         idx = int(self.rng.randint(len(self.attack_library)))
         self.attack_keyframes = self.attack_library[idx]
 
-        # A single duration used for all attacks for now; can be made per-attack later
         self.attack_duration_steps = max(45, self.max_steps // 4)
         self.attack_progress = 0
 
@@ -500,19 +451,15 @@ class SamuraiParryEnv(gym.Env):
         t_global = float(self.attack_progress) / float(max(1, self.attack_duration_steps - 1))
         t_global = max(0.0, min(1.0, t_global))
 
-        # Cubic ease-in-out for more natural acceleration/deceleration
-        s = t_global
-        s_eased = 3.0 * s * s - 2.0 * s * s * s
-
         # Determine which segment of the attack we are in
-        seg = int(s_eased * n_seg)
+        seg = int(t_global * n_seg)
         if seg >= n_seg:
             seg = n_seg - 1
             local_t = 1.0
         else:
             seg_start = float(seg) / float(n_seg)
             seg_end = float(seg + 1) / float(n_seg)
-            local_t = (s_eased - seg_start) / max(1e-6, (seg_end - seg_start))
+            local_t = (t_global - seg_start) / max(1e-6, (seg_end - seg_start))
 
         q_start = np.array(kfs[seg], dtype=np.float32)
         q_end = np.array(kfs[seg + 1], dtype=np.float32)
@@ -531,6 +478,7 @@ class SamuraiParryEnv(gym.Env):
         if self.attack_progress >= self.attack_duration_steps:
             # Start a new swing once the current one finishes
             self._init_opponent_attack()
+
     # ------------- Observation & Reward -------------
 
     def _get_joint_state(self, body_id: int) -> Tuple[np.ndarray, np.ndarray]:
@@ -544,16 +492,21 @@ class SamuraiParryEnv(gym.Env):
     def _get_sword_tip_pos(self, sword_id: int) -> np.ndarray:
         """
         Get the world position of the sword tip, assuming tip at local +X.
+        Delegates to sword_utils.get_sword_tip_position for consistent geometry.
         """
-        pos, orn = p.getBasePositionAndOrientation(
-            sword_id, physicsClientId=self.client_id
+        return get_sword_tip_position(self.client_id, sword_id, self.sword_length)
+
+    def _get_sword_tip_and_dir(self, sword_id: int) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Convenience wrapper using sword_utils.get_sword_tip_and_direction.
+        Returns (tip_position, direction_vector).
+        """
+        tip, direction = get_sword_tip_and_direction(
+            self.client_id, sword_id, self.sword_length
         )
-        pos = np.array(pos, dtype=np.float32)
-        half_len = self.sword_length * 0.5
-        rot_mat = np.array(p.getMatrixFromQuaternion(orn)).reshape(3, 3)
-        local_tip = np.array([half_len, 0.0, 0.0], dtype=np.float32)
-        tip_world = pos + rot_mat @ local_tip
-        return tip_world.astype(np.float32)
+        return tip, direction
+
+
 
     def _get_observation(self) -> np.ndarray:
         agent_q, agent_dq = self._get_joint_state(self.agent_id)
@@ -579,77 +532,87 @@ class SamuraiParryEnv(gym.Env):
 
         return obs
 
-    def _compute_reward_and_done(self) -> Tuple[float, bool, bool, Dict[str, Any]]:
-        agent_sword_tip = self._get_sword_tip_pos(self.agent_sword_id)
-        opp_sword_tip = self._get_sword_tip_pos(self.opponent_sword_id)
 
+
+    def _compute_reward_and_done(self) -> Tuple[float, bool, bool, Dict[str, Any]]:
+        """
+        Wrapper that gathers geometric / kinematic features and forwards them
+        to reward_engine.compute_reward_and_done_advanced.
+
+        Keeps the environment clean while allowing reward shaping to evolve
+        in reward_engine.py.
+        """
+        # --- Sword geometry: tips and directions ---
+        agent_sword_tip, agent_dir = self._get_sword_tip_and_dir(self.agent_sword_id)
+        opp_sword_tip, opp_dir = self._get_sword_tip_and_dir(self.opponent_sword_id)
+
+        # --- Joint state for stance / control penalties ---
+        agent_q, agent_dq = self._get_joint_state(self.agent_id)
+
+        # Distances and parry zone
         dist_swords = float(np.linalg.norm(agent_sword_tip - opp_sword_tip))
         dist_to_base = float(np.linalg.norm(opp_sword_tip - self.agent_base_pos))
-
         parry_zone_radius = 0.7
         parry_active = dist_to_base < parry_zone_radius
 
-        reward = 0.0
-
-        # Encourage being close to the opponent sword tip, but not just camping
-        if parry_active:
-            reward += 1.5 * np.exp(-4.0 * dist_swords)
-            # Small penalty for "just blocking" in the parry zone with no actual contact
-            # to discourage stationary camping solutions.
-            contact_parry_tmp = p.getContactPoints(
-                bodyA=self.agent_sword_id,
-                bodyB=self.opponent_sword_id,
-                physicsClientId=self.client_id,
-            )
-            if len(contact_parry_tmp) == 0:
-                reward -= 0.02
+        # --- Opponent blade velocity / threat ---
+        if self._prev_opp_tip is None:
+            opp_vel = np.zeros(3, dtype=np.float32)
         else:
-            reward += 0.1 * np.exp(-2.0 * dist_swords)
+            dt = max(1e-6, self.time_step * float(self.frame_skip))
+            opp_vel = (opp_sword_tip - self._prev_opp_tip) / dt
+        self._prev_opp_tip = opp_sword_tip.copy()
 
-        # Smooth movement bonus: encourage some motion of the agent sword tip
-        if self._prev_agent_tip is None:
-            self._prev_agent_tip = agent_sword_tip.copy()
-        movement = float(np.linalg.norm(agent_sword_tip - self._prev_agent_tip))
-        self._prev_agent_tip = agent_sword_tip.copy()
-        reward += 0.01 * movement
+        attack_dir_to_agent = self.agent_base_pos - opp_sword_tip
+        attack_dir_norm = np.linalg.norm(attack_dir_to_agent)
+        if attack_dir_norm > 1e-6:
+            attack_dir_to_agent = attack_dir_to_agent / attack_dir_norm
+        else:
+            attack_dir_to_agent = np.array([1.0, 0.0, 0.0], dtype=np.float32)
 
-        # Small control penalty
-        _, agent_dq = self._get_joint_state(self.agent_id)
-        control_cost = 0.01 * float(np.sum(agent_dq ** 2))
-        reward -= control_cost
+        attack_speed_along = float(np.dot(opp_vel, attack_dir_to_agent))
+        attack_speed = float(np.linalg.norm(opp_vel))
 
-        # Contacts for parry / hit detection
-        contact_parry = p.getContactPoints(
-            bodyA=self.agent_sword_id,
-            bodyB=self.opponent_sword_id,
-            physicsClientId=self.client_id,
+        # Binary "threat" scalar
+        threat_scalar = 0.0
+        approaching = attack_speed_along > 0.15
+        if parry_active and approaching:
+            threat_scalar = float(1.0 - dist_to_base / max(parry_zone_radius, 1e-6))
+            threat_scalar = float(np.clip(threat_scalar, 0.0, 1.0))
+
+        # --- Parry angle (sword–sword crossing) ---
+        parry_angle_rad = compute_sword_angle(agent_dir, opp_dir)
+        parry_angle_deg = float(np.degrees(parry_angle_rad))
+
+        # Neutral stance configuration (same as _reset_simulation neutral)
+        neutral_q = np.array([0.0, -0.3, 0.0, -1.2, 0.0, 1.7, 0.5], dtype=np.float32)
+
+        reward, done_hit, done_parry, info, new_prev_agent_tip = compute_reward_and_done_advanced(
+            client_id=self.client_id,
+            agent_sword_id=self.agent_sword_id,
+            opponent_sword_id=self.opponent_sword_id,
+            agent_body_id=self.agent_id,
+            agent_base_pos=self.agent_base_pos,
+            agent_sword_tip=agent_sword_tip,
+            opponent_sword_tip=opp_sword_tip,
+            prev_agent_tip=self._prev_agent_tip,
+            agent_q=agent_q,
+            agent_dq=agent_dq,
+            neutral_q=neutral_q,
+            attack_speed=attack_speed,
+            attack_speed_along=attack_speed_along,
+            threat_scalar=threat_scalar,
+            parry_angle_deg=parry_angle_deg,
+            parry_zone_radius=parry_zone_radius,
         )
-        contact_body_hit = p.getContactPoints(
-            bodyA=self.opponent_sword_id,
-            bodyB=self.agent_id,
-            physicsClientId=self.client_id,
-        )
 
-        done_hit = False
-        done_parry = False
+        # Update motion state for next step
+        self._prev_agent_tip = new_prev_agent_tip
 
-        if len(contact_body_hit) > 0:
-            # Opponent sword hit agent body: big penalty and terminate
-            reward -= 5.0
-            done_hit = True
-
-        if parry_active and len(contact_parry) > 0:
-            # Successful parry: big reward but do NOT terminate the episode
-            reward += 5.0
-            done_parry = False
-
-        info: Dict[str, Any] = {
-            "dist_swords": dist_swords,
-            "dist_to_base": dist_to_base,
-            "parry_active": parry_active,
-            "contact_parry": len(contact_parry) > 0,
-            "contact_body_hit": len(contact_body_hit) > 0,
-        }
+        # Also expose some core geometry directly in info
+        info.setdefault("dist_swords", dist_swords)
+        info.setdefault("dist_to_base", dist_to_base)
+        info.setdefault("parry_active", parry_active)
 
         return float(reward), done_hit, done_parry, info
 
