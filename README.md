@@ -118,7 +118,7 @@ pip install matplotlib numpy
 
 
 
- ##🗡️ Opponent Attack Model
+ ###🗡️ Opponent Attack Model
 
 
 
@@ -138,7 +138,7 @@ pip install matplotlib numpy
 
 
 
- # 🔁 Cooldown-Based Parry Detection
+ #🔁 Cooldown-Based Parry Detection
 
 
 
@@ -146,7 +146,7 @@ Originally the system counted every contact frame as a “parry”, inflating nu
 
 
 
- *fixed this using: *
+ *fixed this using:*
 
 
 
