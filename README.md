@@ -4,9 +4,9 @@
 
 
 
-Samurai-Reflex-RL is a robotics project exploring  **defensive reflex learning** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
+Samurai-Reflex-RL is a robotics project exploring **defensive reflex learning** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
 
-A 7-DOF robotic arm learns to  **detect, react and parry** incoming sword attacks from an opponent robot using continuous control.
+A 7-DOF robotic arm learns to **detect, react and parry** incoming sword attacks from an opponent robot using continuous control.
 
 
 
@@ -21,17 +21,17 @@ This repository contains the full environment, training code, evaluation pipelin
  ## ✨ Features
 
 
-- 🗡️  **Scripted opponent attack model ** with curved Bézier sword arcs  
+- 🗡️ **Scripted opponent attack model** with curved Bézier sword arcs  
 
-- 🛡️  **PPO-trained defensive policy **  that learns parry reflexes  
+- 🛡️ **PPO-trained defensive policy**  that learns parry reflexes  
 
-- 🔁  **Cooldown-based parry detection metric ** (fixes false positives)  
+- 🔁 **Cooldown-based parry detection metric** (fixes false positives)  
 
-- 📊 Automatic  **evaluation graphs **: rewards, parries, distributions  
+- 📊 Automatic **evaluation graphs**: rewards, parries, distributions  
 
-- 🧪  **Deterministic evaluation ** over 50 episodes  
+- 🧪 **Deterministic evaluation** over 50 episodes  
 
-- ⚙️ Fully reproducible  **UV-powered Python 3.10 environment **  
+- ⚙️ Fully reproducible **UV-powered Python 3.10 environment**  
 
 - 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
 
@@ -44,9 +44,9 @@ This repository contains the full environment, training code, evaluation pipelin
 
 
 
-This project uses  **Python 3.10 ** because PyBullet wheels do not support 3.11+.  
+This project uses **Python 3.10** because PyBullet wheels do not support 3.11+.  
 
-We use   **UV  ** for a clean and stable virtual environment.
+We use  **UV** for a clean and stable virtual environment.
 
 
 
@@ -218,7 +218,7 @@ python evaluate.py
 ```
 
 
- *NOTE:  *
+ *NOTE:*
 
 * Running this without training works as a dry run
 * It uses base reward system idea
