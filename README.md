@@ -1,12 +1,12 @@
-\# 🥷 Samurai-Reflex-RL
+# 🥷 Samurai-Reflex-RL
 
-\### Reinforcement Learning for Robotic Sword Parrying in PyBullet
+### Reinforcement Learning for Robotic Sword Parrying in PyBullet
 
 
 
-Samurai-Reflex-RL is a robotics project exploring \*\*defensive reflex learning\*\* using reinforcement learning (PPO) inside a custom PyBullet simulation.  
+Samurai-Reflex-RL is a robotics project exploring  * *defensive reflex learning * * using reinforcement learning (PPO) inside a custom PyBullet simulation.  
 
-A 7-DOF robotic arm learns to \*\*detect, react, and parry\*\* incoming sword attacks from an opponent robot using continuous control.
+A 7-DOF robotic arm learns to  * *detect, react, and parry * * incoming sword attacks from an opponent robot using continuous control.
 
 
 
@@ -18,29 +18,22 @@ This repository contains the full environment, training code, evaluation pipelin
 
 
 
-\## ✨ Features
+ ## ✨ Features
 
 
+- 🗡️  * *Scripted opponent attack model * * with curved Bézier sword arcs  
 
-\- 🗡️ \*\*Scripted opponent attack model\*\* with curved Bézier sword arcs  
+- 🛡️  * *PPO-trained defensive policy * * that learns parry reflexes  
 
-\- 🛡️ \*\*PPO-trained defensive policy\*\* that learns parry reflexes  
+- 🔁  * *Cooldown-based parry detection metric * * (fixes false positives)  
 
-\- 🔁 \*\*Cooldown-based parry detection metric\*\* (fixes false positives)  
+- 📊 Automatic  * *evaluation graphs * *: rewards, parries, distributions  
 
-\- 📊 Automatic \*\*evaluation graphs\*\*: rewards, parries, distributions  
+- 🧪  * *Deterministic evaluation * * over 50 episodes  
 
-\- 🧪 \*\*Deterministic evaluation\*\* over 50 episodes  
+- ⚙️ Fully reproducible  * *UV-powered Python 3.10 environment * *  
 
-\- ⚙️ Fully reproducible \*\*UV-powered Python 3.10 environment\*\*  
-
-\- 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
-
-
-
----
-
-
+- 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
 
 
 
@@ -48,17 +41,23 @@ This repository contains the full environment, training code, evaluation pipelin
 
 
 
-\# ⚙️ Installation \& Environment Setup (Windows + UV)
+
+
+---
 
 
 
-This project uses \*\*Python 3.10\*\* because PyBullet wheels do not support 3.11+.  
-
-We use \*\*UV\*\* for a clean and stable virtual environment.
+ # ⚙️ Installation  & Environment Setup (Windows + UV)
 
 
 
-\### 1️⃣ Install UV
+This project uses  * *Python 3.10 * * because PyBullet wheels do not support 3.11+.  
+
+We use  * *UV * * for a clean and stable virtual environment.
+
+
+
+ ### 1️⃣ Install UV
 
 
 
@@ -76,11 +75,11 @@ pip install uv
 
 
 
-\### 2️⃣ Create environment (Python 3.10 required)
+ ### 2️⃣ Create environment (Python 3.10 required)
 
 ```bash
 
-uv venv samurai\_rl --python 3.10
+uv venv samurai _rl --python 3.10
 
 ```
 
@@ -94,7 +93,7 @@ If you have a global path for python version above 3.10, (ie. 3.11 and above use
 
 
 
-py -3.11 -m uv venv samurai\_rl --python 3.10
+py -3.11 -m uv venv samurai _rl --python 3.10
 
 
 
@@ -102,19 +101,19 @@ py -3.11 -m uv venv samurai\_rl --python 3.10
 
 
 
-\### 3️⃣ Activate environment
+ ### 3️⃣ Activate environment
 
 
 
 ```bash
 
-.\\samurai\_rl\\Scripts\\Activate.ps1
+.  samurai _rl  Scripts  Activate.ps1
 
 ```
 
 
 
-\### 4️⃣ Install dependencies
+ ### 4️⃣ Install dependencies
 
 
 
@@ -122,11 +121,11 @@ py -3.11 -m uv venv samurai\_rl --python 3.10
 
 pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 
-pip install "gymnasium\[all]==1.2.2"
+pip install "gymnasium [all]==1.2.2"
 
-pip install "stable-baselines3\[extra]==2.2.1"
+pip install "stable-baselines3 [extra]==2.2.1"
 
-pip install https://github.com/bulletphysics/bullet3/releases/download/3.25/pybullet-3.25-cp310-cp310-win\_amd64.whl
+pip install https://github.com/bulletphysics/bullet3/releases/download/3.25/pybullet-3.25-cp310-cp310-win _amd64.whl
 
 pip install matplotlib numpy
 
@@ -140,15 +139,15 @@ pip install matplotlib numpy
 
 
 
-\# 🧠 Technical Overview
+ # 🧠 Technical Overview
 
 
 
-\##🗡️ Opponent Attack Model
+ ##🗡️ Opponent Attack Model
 
 
 
-\*Attacks are not random — they follow a realistic sword swing using:\*
+ *Attacks are not random — they follow a realistic sword swing using: *
 
 
 
@@ -164,7 +163,7 @@ pip install matplotlib numpy
 
 
 
-\# 🔁 Cooldown-Based Parry Detection
+ # 🔁 Cooldown-Based Parry Detection
 
 
 
@@ -172,7 +171,7 @@ Originally the system counted every contact frame as a “parry”, inflating nu
 
 
 
-\*fixed this using:\*
+ *fixed this using: *
 
 
 
@@ -203,7 +202,7 @@ Parry rate: 100%
 
 
 
-\# 🥋 Training the Agent
+ # 🥋 Training the Agent
 
 
 
@@ -223,7 +222,7 @@ This will:
 
 * CLI Training mode
 * Train for N timesteps
-* Save model to: models/samurai\_ppo.zip
+* Save model to: models/samurai _ppo.zip
 
 
 
@@ -231,11 +230,11 @@ This will:
 
 
 
-\# 🔬 Evaluation
+ # 🔬 Evaluation
 
 
 
-\*Use event-based parry metric:\*
+ *Use event-based parry metric: *
 
 
 
@@ -247,7 +246,7 @@ python evaluate.py
 ```
 
 
-\*NOTE: \*
+ *NOTE:  *
 
 * Running this without training works as a dry run
 * It uses base reward system idea
@@ -275,7 +274,7 @@ Total hits: 0
 
 
 
-\# 🚧 Known Limitations
+ # 🚧 Known Limitations
 
 
 
@@ -291,7 +290,7 @@ Total hits: 0
 
 
 
-\# 🚀 Future Work
+ # 🚀 Future Work
 
 
 
