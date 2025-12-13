@@ -66,7 +66,6 @@ pip install uv
 
 1. Clone this repository
 2. setup uv outside the folder
-3. cd samurai project while in uv
    
 
  ### 2️⃣ Create environment (Python 3.10 required)
@@ -113,7 +112,11 @@ pip install matplotlib numpy
 
 ```
 
+### 5️⃣ Change directory while in uv
 
+```bash
+cd samurai project 
+```
 
 ---
 
