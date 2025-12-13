@@ -6,8 +6,7 @@
 
 Samurai-Reflex-RL is a robotics project exploring **defensive reflex learning** using reinforcement learning (PPO) inside a custom PyBullet simulation.  
 
-A 7-DOF robotic arm learns to **detect, react and parry** incoming sword attacks from an opponent robot using continuous control.
-
+A 7-DOF robotic arm learns to **react and parry** incoming sword attacks from an opponent robot using continuous control.
 
 
 This repository contains the full environment, training code, evaluation pipeline and reproducible setup scripts.
@@ -71,9 +70,7 @@ uv venv samurai _rl --python 3.10
 ```
 
 
-
 If you have a global path for python version above 3.10, (ie. 3.11 and above use) after installing 3.10.
-
 
 
 ```bash
@@ -127,7 +124,6 @@ pip install matplotlib numpy
  *Attacks are not random — they follow a realistic sword swing using: *
 
 
-
 * Quadratic Bézier curve interpolation
 * Wind-up → Strike → Follow-through phases
 * Random lateral offsets for realism
@@ -137,7 +133,6 @@ pip install matplotlib numpy
 
 
 ---
-
 
 
  # 🔁 Cooldown-Based Parry Detection
@@ -150,8 +145,6 @@ Originally the system counted every contact frame as a “parry”, inflating nu
 
  *fixed this using:*
 
-
-
 * Sliding cooldown window (≥ 15 steps)
 * Spatial position check
 * Blade orientation check
@@ -160,8 +153,6 @@ Originally the system counted every contact frame as a “parry”, inflating nu
 
 
 Such as:
-
-
 
 Mean parries per episode: 3.02
 
