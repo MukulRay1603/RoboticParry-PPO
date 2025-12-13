@@ -72,7 +72,7 @@ pip install uv
  ### 2️⃣ Create environment (Python 3.10 required)
 
 ```bash
-uv venv samurai _rl --python 3.10
+uv venv samurai_rl --python 3.10
 ```
 
 
@@ -80,7 +80,7 @@ If you have a global path for python version above 3.10, (ie. 3.11 and above use
 
 
 ```bash
-py -3.11 -m uv venv samurai _rl --python 3.10
+py -3.11 -m uv venv samurai_rl --python 3.10
 ```
 
 
@@ -90,7 +90,7 @@ py -3.11 -m uv venv samurai _rl --python 3.10
 
 
 ```bash
-.  samurai _rl  Scripts  Activate.ps1
+.\samurai_rl\Scripts\activate
 ```
 
 
