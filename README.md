@@ -47,7 +47,13 @@ This project uses **Python 3.10** because PyBullet wheels do not support 3.11+.
 
 We use  **UV** for a clean and stable virtual environment.
 
+##$ PROJECT RUNS BASED ON NVIDIA CUDA
 
+- Please ensure you have a working gpu or tensor on your device
+- Identify and get the right device drivers (ensure to upgrade them to the latest)
+- Have the correct CUDA or CuDnn driver as well
+
+Note: Project was tested using RTX 3080 10gb OC - CUDA 12.1
 
 
  ### 1️⃣ Install UV
