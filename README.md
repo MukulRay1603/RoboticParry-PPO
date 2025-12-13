@@ -118,6 +118,12 @@ pip install matplotlib numpy
 cd samurai project 
 ```
 
+### 6️⃣ For final sanity check
+Install all requirements with correct versions to ensure smooth running
+
+```bash
+pip install -r requirements.txt
+```
 ---
 
 
