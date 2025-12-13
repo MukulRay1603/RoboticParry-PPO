@@ -51,15 +51,20 @@ This repository contains the full environment, training code, evaluation pipelin
 
 ## Docker Running Setup
 
--First run the following command to build the container
+- First run the following command to build the container
+```bash
 docker-compose build 
+```
 
--Now run the container with
+- Now run the container with
+```bash
 docker-compose run --rm -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=1 samurai-rl bash
+```
 
--Run the Samurai bot evaluation file with
+- Run the Samurai bot evaluation file with
+```bash
 python SamuraiProject/eval_samurai.py
-
+```
 ---
 
  # ⚙️ Installation  & Environment Setup (Windows + UV) without docker
@@ -138,7 +143,7 @@ pip install matplotlib numpy
 ### 5️⃣ Change directory while in uv
 
 ```bash
-cd samurai project 
+cd SamuraiProject
 ```
 
 ### 6️⃣ For final sanity check
