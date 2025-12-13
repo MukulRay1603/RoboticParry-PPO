@@ -36,7 +36,7 @@ This repository contains the full environment, training code, evaluation pipelin
 
 ---
 
-###NOTE
+## NOTE
 
 - The code contains two folders which have trained models for steady guard & defensive stance
 - You can copy paste all files and replace the files within the respective directory where all the py files reside
