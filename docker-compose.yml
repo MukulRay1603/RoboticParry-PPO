@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  samurai-rl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: samurai_robot_arm
+    volumes:
+      # Mount project directories for development
+      - ./SamuraiProject:/workspace/SamuraiProject
+      - ./samurai_rl:/workspace/samurai_rl
+      # Persist training outputs
+      - ./outputs:/workspace/outputs
+      - ./models:/workspace/models
+    environment:
+      - DISPLAY=:99
+      - PYTHONUNBUFFERED=1
+    # Enable GPU support if available
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+    command: python SamuraiProject/train_samurai.py
+
+  # Service for evaluation/testing
+  samurai-eval:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: samurai_eval
+    volumes:
+      - ./SamuraiProject:/workspace/SamuraiProject
+      - ./samurai_rl:/workspace/samurai_rl
+      - ./outputs:/workspace/outputs
+      - ./models:/workspace/models
+    environment:
+      - DISPLAY=:99
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: python SamuraiProject/eval_samurai.py
+    profiles:
+      - eval

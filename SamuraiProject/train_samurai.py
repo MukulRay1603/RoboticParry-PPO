@@ -61,7 +61,7 @@ def make_env_fn():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--timesteps", type=int, default=200_000)
+    parser.add_argument("--timesteps", type=int, default=50_000)
     parser.add_argument("--save-path", type=str, default="samurai_ppo")
     args = parser.parse_args()
 
