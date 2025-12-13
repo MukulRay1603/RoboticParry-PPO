@@ -34,12 +34,35 @@ This repository contains the full environment, training code, evaluation pipelin
 
 - 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
 
+---
+
+###NOTE
+
+- The code contains two folders which have trained models for steady guard & defensive stance
+- You can copy paste all files and replace the files within the respective directory where all the py files reside
+- Then run
+  ```bash
+  python eval_samurai.py
+  ```
+
+  This shows the right run for each type of defensive training style
 
 ---
 
+## Docker Running Setup
 
+-First run the following command to build the container
+docker-compose build 
 
- # ⚙️ Installation  & Environment Setup (Windows + UV)
+-Now run the container with
+docker-compose run --rm -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=1 samurai-rl bash
+
+-Run the Samurai bot evaluation file with
+python SamuraiProject/eval_samurai.py
+
+---
+
+ # ⚙️ Installation  & Environment Setup (Windows + UV) without docker
 
 
 
