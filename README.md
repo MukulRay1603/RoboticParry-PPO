@@ -279,9 +279,16 @@ Total hits: 0
 
 
 ---
+# Metrics for Training
 
+![Learning curve based on fps](outputs/learning_curve_time_fps.png) 
 
+![Learning curve based on train entropy loss](outputs/learning_curve_train_entropy_loss.png)
 
+![Learning curve based on train policy gradient loss](outputs/learning_curve_train_policy_gradient_loss.png)
+
+![Learning curve based on train value loss] (outputs/learning_curve_train_value_loss.png)
+---
  # 🚧 Known Limitations
 
 
