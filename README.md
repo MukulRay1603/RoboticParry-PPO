@@ -35,6 +35,13 @@ This repository contains the full environment, training code, evaluation pipelin
 - 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
 
 ---
+# Overview
+
+A rendered display of 2 Frank Panda arms holding swords in a pybullet Environment
+![Pybullet Env](./Outputs/Env_setup.png)
+
+
+---
 
 ## NOTE
 
@@ -158,10 +165,7 @@ pip install -r requirements.txt
 
  # 🧠 Technical Overview
 
-
-
  # 🗡️ Opponent Attack Model
-
 
 
  *Attacks are not random — they follow a realistic sword swing using: *
@@ -174,48 +178,35 @@ pip install -r requirements.txt
 * This produces lifelike attack trajectories that the agent must defend against.
 
 
+# Baseline Test (Dry-Run)
 
----
+- This render stage is where we test the agent without a trained ppo model
 
-
- # 🔁 Cooldown-Based Parry Detection
-
-
-
-Originally the system counted every contact frame as a “parry”, inflating numbers.
-
-
-
- *fixed this using:*
-
-* Sliding cooldown window (≥ 15 steps)
-* Spatial position check
-* Blade orientation check
-* Contact force validation
-
-
-
-Such as:
-
-Mean parries per episode: 3.02
-
-Total parries: 151
-
-Total hits: 0
-
-Parry rate: 100%
-
-
-
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./outputs/Baseline1.png" width="90%" alt="Falling bot image">
+      <br>
+      **Figure 1: Falling Bot**
+      <br>
+      <small>The agent failed to maintain balance and fell immediately.</small>
+    </td>
+    
+    <td width="50%" align="center">
+      <img src="./outputs/Baseline2.png" width="90%" alt="Flailing bot image">
+      <br>
+      **Figure 2: Flailing Bot**
+      <br>
+      <small>The agent flailed its limbs wildly attempting to recover.</small>
+    </td>
+  </tr>
+</table>
 
 
 ---
-
 
 
  # 🥋 Training the Agent
-
-
 
 ```bash
 
@@ -223,25 +214,15 @@ python train.py
 
 ```
 
-
-
 This will:
-
-
 
 * CLI Training mode
 * Train for N timesteps
 * Save model to: models/samurai _ppo.zip
 
-
-
 ---
 
-
-
  # 🔬 Evaluation
-
-
 
  *Use event-based parry metric:*
 
@@ -253,32 +234,45 @@ python evaluate.py
 
 ```
 
-
  *NOTE:*
 
 * Running this without training works as a dry run
 * It uses base reward system idea
 * Running after training will show trained results
 
-
-
 Output summary:
 
 
-
-Mean reward: 8.66
-
-Mean episode length: 200
-
-Mean parries/episode: 3.02
-
-Parry rate: 100%
-
-Total hits: 0
-
-
+- Mean reward: 8.66
+- Mean episode length: 200
+- Mean parries/episode: 3.02
+- Parry rate: 100%
+- Total hits: 0
 
 ---
+
+ # 🔁 Cooldown-Based Parry Detection
+
+
+Originally the system counted every contact frame as a “parry”, inflating numbers.
+
+
+ *fixed this using:*
+
+* Sliding cooldown window (≥ 15 steps)
+* Spatial position check
+* Blade orientation check
+* Contact force validation
+
+Such as:
+
+- Mean parries per episode: 3.02
+- Total parries: 151
+- Total hits: 0
+- Parry rate: 100%
+
+---
+
 # Metrics for Training
 
 <table>
@@ -305,8 +299,8 @@ Total hits: 0
 </table>
 
 ---
- # 🚧 Known Limitations
 
+ # 🚧 Known Limitations
 
 
 * Opponent is scripted (not a learning agent)
