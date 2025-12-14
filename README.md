@@ -187,15 +187,14 @@ pip install -r requirements.txt
     <td width="50%" align="center">
       <img src="./outputs/Baseline1.png" width="90%" alt="Falling bot image">
       <br>
-      **Figure 1: Falling Bot**
+      ** Figure 1: Falling Bot **
       <br>
       <small>The agent failed to maintain balance and fell immediately.</small>
     </td>
-    
     <td width="50%" align="center">
       <img src="./outputs/Baseline2.png" width="90%" alt="Flailing bot image">
       <br>
-      **Figure 2: Flailing Bot**
+      ** Figure 2: Flailing Bot **
       <br>
       <small>The agent flailed its limbs wildly attempting to recover.</small>
     </td>
@@ -278,21 +277,21 @@ Such as:
 <table>
   <tr>
     <td width="50%" align="center">
-      **Learning Curve Based on FPS**
+      ** Learning Curve Based on FPS **
       <img src="outputs/learning_curve_time_fps.png" width="100%" alt="Learning curve based on FPS">
     </td>
     <td width="50%" align="center">
-      **Learning Curve Based on Training Entropy Loss**
+      ** Learning Curve Based on Training Entropy Loss **
       <img src="outputs/learning_curve_train_entropy_loss.png" width="100%" alt="Learning curve based on train entropy loss">
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      **Learning Curve Based on Policy Gradient Loss**
+      ** Learning Curve Based on Policy Gradient Loss **
       <img src="outputs/learning_curve_train_policy_gradient_loss.png" width="100%" alt="Learning curve based on train policy gradient loss">
     </td>
     <td width="50%" align="center">
-      **Learning Curve Based on Value Loss**
+      ** Learning Curve Based on Value Loss **
       <img src="outputs/learning_curve_train_value_loss.png" width="100%" alt="Learning curve based on train value loss">
     </td>
   </tr>
