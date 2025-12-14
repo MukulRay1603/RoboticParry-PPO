@@ -253,6 +253,48 @@ python evaluate.py
 * It uses base reward system idea
 * Running after training will show trained results
 
+### Test with Steady Guard
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./outputs/steadydefence1.png" width="90%" alt="Steadydefence">
+      <br>
+      ** Steady Defence 1 **
+      <br>
+      <small>The agent holds it's body in a strong pose by only moving the wrist ie. sword arc deflect </small>
+    </td>
+    <td width="50%" align="center">
+      <img src="./outputs/steadydefence2.png" width="90%" alt="Steadydefence">
+      <br>
+      ** Steady Defence 2 **
+      <br>
+      <small> The agent's reward engine delivers higher rewards for sword contact than motion </small>
+    </td>
+  </tr>
+</table>
+
+### Test with Evasion
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="./outputs/evasion1.png" width="90%" alt="Evasion">
+      <br>
+      ** Evasion 1 **
+      <br>
+      <small>The agent feels the need to move out of the way by leaning back/ forward </small>
+    </td>
+    <td width="50%" align="center">
+      <img src="./outputs/evasion2.png" width="90%" alt="Evasion">
+      <br>
+      ** Evasion 2 **
+      <br>
+      <small> The agent's reward engine delivers higher rewards for motion than sword contact </small>
+    </td>
+  </tr>
+</table>
+ 
 Output summary:
 
 <img src="./outputs/summary.png" width="500"/>
