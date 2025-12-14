@@ -180,6 +180,15 @@ pip install -r requirements.txt
 
 # Baseline Test (Dry-Run)
 
+
+ * Ensure no model or cache is saved in the model dir as the evaluate.py searches for the model within the same folder *
+
+```bash
+
+python evaluate.py
+
+```
+
 - This render stage is where we test the agent without a trained ppo model
 
 <table>
@@ -187,14 +196,14 @@ pip install -r requirements.txt
     <td width="50%" align="center">
       <img src="./outputs/Baseline1.png" width="90%" alt="Falling bot image">
       <br>
-      ** Figure 1: Falling Bot **
+      ** Falling Bot **
       <br>
       <small>The agent failed to maintain balance and fell immediately.</small>
     </td>
     <td width="50%" align="center">
       <img src="./outputs/Baseline2.png" width="90%" alt="Flailing bot image">
       <br>
-      ** Figure 2: Flailing Bot **
+      ** Flailing Bot **
       <br>
       <small>The agent flailed its limbs wildly attempting to recover.</small>
     </td>
@@ -219,13 +228,18 @@ This will:
 * Train for N timesteps
 * Save model to: models/samurai _ppo.zip
 
+* Saved models are available for 2 styles with unique reward engine
+- evasion
+- steady guard
+
+Trained ppo model for 200k iterations for steady guard
+
+<img src="./outputs/training_200k.png" width="200" alt="Company logo"/>
 ---
 
  # 🔬 Evaluation
 
  *Use event-based parry metric:*
-
-
 
 ```bash
 
@@ -241,7 +255,9 @@ python evaluate.py
 
 Output summary:
 
+<img src="./outputs/summary.png" width="200" alt="Company logo"/>
 
+We observe the metrics post test
 - Mean reward: 8.66
 - Mean episode length: 200
 - Mean parries/episode: 3.02
