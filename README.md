@@ -281,13 +281,25 @@ Total hits: 0
 ---
 # Metrics for Training
 
-![Learning curve based on fps](outputs/learning_curve_time_fps.png) 
+<table>
+  <tr>
+    <td width="50%">
+      <img src="outputs/learning_curve_time_fps.png" width="100%" alt="Learning curve based on FPS">
+    </td>
+    <td width="50%">
+      <img src="outputs/learning_curve_train_entropy_loss.png" width="100%" alt="Learning curve based on train entropy loss">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="outputs/learning_curve_train_policy_gradient_loss.png" width="100%" alt="Learning curve based on train policy gradient loss">
+    </td>
+    <td width="50%">
+      <img src="outputs/learning_curve_train_value_loss.png" width="100%" alt="Learning curve based on train value loss">
+    </td>
+  </tr>
+</table>
 
-![Learning curve based on train entropy loss](outputs/learning_curve_train_entropy_loss.png)
-
-![Learning curve based on train policy gradient loss](outputs/learning_curve_train_policy_gradient_loss.png)
-
-![Learning curve based on train value loss] (outputs/learning_curve_train_value_loss.png)
 ---
  # 🚧 Known Limitations
 
