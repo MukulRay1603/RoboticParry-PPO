@@ -234,7 +234,7 @@ This will:
 
 Trained ppo model for 200k iterations for steady guard
 
-<img src="./outputs/training_200k.png" width="200" alt="Company logo"/>
+<img src= "./outputs/training_200k.png" width="500"/>
 ---
 
  # 🔬 Evaluation
@@ -255,7 +255,7 @@ python evaluate.py
 
 Output summary:
 
-<img src="./outputs/summary.png" width="200" alt="Company logo"/>
+<img src="./outputs/summary.png" width="500"/>
 
 We observe the metrics post test
 - Mean reward: 8.66
