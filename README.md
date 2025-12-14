@@ -38,7 +38,7 @@ This repository contains the full environment, training code, evaluation pipelin
 # Overview
 
 A rendered display of 2 Frank Panda arms holding swords in a pybullet Environment
-![Pybullet Env](./Outputs/Env_setup.png)
+![Pybullet Env](./outputs/Env_setup.png)
 
 
 ---
