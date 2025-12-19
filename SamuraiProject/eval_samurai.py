@@ -1,32 +1,25 @@
 """
 Simple evaluation / visualization script using PyBullet GUI.
 
-Run with (after training):
+Now supports interactive mode selection:
+1 - Dry Run (no PPO model, local reward_engine.py)
+2 - Steady Defence (loads reward_engine.py + PPO from STEADY GUARD/)
+3 - Evasion (loads reward_engine.py + PPO from EVASION DEFENCE/)
 
-    samurai_rl\Scripts\python.exe eval_samurai.py --model-path samurai_ppo.zip
-
-You can also run it BEFORE training; if the model file is missing,
-the agent will just use random actions so you can sanity-check
-that the PyBullet scene and swords work without crashing.
-
-By default this script runs episodes in an endless loop so that the
-PyBullet window stays open until you close it or press Ctrl+C.
+No other logic is changed.
 """
 
 import argparse
 import os
-import time
 import sys
+import time
 
 import numpy as np
 from stable_baselines3 import PPO
 
-#from samurai_env import SamuraiParryEnv
-
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", type=str, default="samurai_ppo.zip")
     parser.add_argument(
         "--episodes",
         type=int,
@@ -35,21 +28,57 @@ def main():
     )
     args = parser.parse_args()
 
+    # ---------------- MODE SELECTION ----------------
+    print("\nSelect Mode:")
+    print("1 - Dry Run (no model)")
+    print("2 - Steady Defence")
+    print("3 - Evasion")
+
+    choice = input("Enter 1/2/3: ").strip()
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    mode_dir = None
+    model_path = None
+
+    if choice == "1":
+        print("[INFO] Dry Run selected.")
+    elif choice == "2":
+        mode_dir = os.path.join(base_dir, "STEADY GUARD")
+        model_path = os.path.join(mode_dir, "samurai_ppo.zip")
+        print("[INFO] Steady Defence selected.")
+    elif choice == "3":
+        mode_dir = os.path.join(base_dir, "EVASION DEFENCE")
+        model_path = os.path.join(mode_dir, "samurai_ppo.zip")
+        print("[INFO] Evasion selected.")
+    else:
+        print("[ERROR] Invalid selection.")
+        return
+
+    # ---------------- ROUTING ----------------
+    if mode_dir:
+        if not os.path.isdir(mode_dir):
+            print(f"[ERROR] Mode folder not found: {mode_dir}")
+            return
+        # Ensure the selected mode's reward_engine.py is imported
+        sys.path.insert(0, mode_dir)
+
+    # Import AFTER sys.path is configured
+    from samurai_env import SamuraiParryEnv
+
     env = SamuraiParryEnv(render_mode="human")
 
+    # ---------------- MODEL LOADING ----------------
     use_model = False
     model = None
 
-    if os.path.exists(args.model_path):
-        print(f"[INFO] Loading model from: {args.model_path}")
-        model = PPO.load(args.model_path, env=env, device="cuda")
+    if model_path and os.path.exists(model_path):
+        print(f"[INFO] Loading model from: {model_path}")
+        model = PPO.load(model_path, env=env, device="cuda")
         use_model = True
     else:
-        print(
-            f"[WARN] Model file '{args.model_path}' not found.\n"
-            f"       Running with RANDOM actions for sanity-check."
-        )
+        print("[INFO] No PPO model loaded. Using random actions.")
 
+    # ---------------- MAIN LOOP ----------------
     ep = 0
     try:
         while True:
@@ -73,9 +102,9 @@ def main():
                 obs, reward, terminated, truncated, info = env.step(action)
                 ep_reward += reward
 
-                # Edge-triggered logging so we don't spam when contact persists
                 parry = bool(info.get("contact_parry"))
                 hit = bool(info.get("contact_body_hit"))
+
                 if parry and not prev_parry:
                     print("[EVENT] Parry registered.")
                 if hit and not prev_hit:
@@ -84,7 +113,6 @@ def main():
                 prev_parry = parry
                 prev_hit = hit
 
-                # Small sleep so GUI doesn't run too fast
                 time.sleep(1.0 / 60.0)
 
             ep += 1

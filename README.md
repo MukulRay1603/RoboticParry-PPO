@@ -56,53 +56,34 @@ A rendered display of 2 Frank Panda arms holding swords in a pybullet Environmen
 
 ---
 
-## Running the Samurai PPO Demo (Docker + GUI)
+## Docker Running Setup
 
-This project is packaged using Docker and is intended to be run on Linux
-with X11 forwarding enabled (tested on Ubuntu 22.04+).
-
-### Requirements
-- Docker
-- X11 (default on Ubuntu desktop / WSLg)
-
-### Steps
-
+- First run the following command to build the container
 ```bash
-# Allow Docker containers to access the X server
-xhost +local:docker
+docker-compose build 
 ```
 
-
-## Clone repo
+- Now run the container with
 ```bash
-git clone https://github.com/MukulRay1603/RoboticParry-PPO.git
+docker-compose run --rm -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=1 samurai-rl bash
 ```
 
-## Build the Docker image
+- Run the Samurai bot evaluation file with
 ```bash
-docker build -t samurai-ppo .
+python SamuraiProject/eval_samurai.py
 ```
-
-## Run the container with GUI support
-```bash
-docker run -it --rm \
-  -e DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  samurai-ppo
-```
-
 ---
 
  # ⚙️ Installation  & Environment Setup (Windows + UV) without docker
+
 
 
 This project uses **Python 3.10** because PyBullet wheels do not support 3.11+.  
 
 We use  **UV** for a clean and stable virtual environment.
 
-## PROJECT RUNS BASED ON NVIDIA CUDA
+##$ PROJECT RUNS BASED ON NVIDIA CUDA
 
-- Testing works cpu only, **Training needs cuda**
 - Please ensure you have a working gpu or tensor on your device
 - Identify and get the right device drivers (ensure to upgrade them to the latest)
 - Have the correct CUDA or CuDnn driver as well
