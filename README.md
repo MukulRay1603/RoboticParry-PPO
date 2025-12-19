@@ -32,7 +32,9 @@ This repository contains the full environment, training code, evaluation pipelin
 
 - ⚙️ Fully reproducible **UV-powered Python 3.10 environment**  
 
-- 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration  
+- 🪶 Stable-Baselines3 + PyBullet + Gymnasium integration
+
+- Interactive feature to select the **PPO Style**
 
 ---
 # Overview
@@ -58,20 +60,58 @@ A rendered display of 2 Frank Panda arms holding swords in a pybullet Environmen
 
 ## Docker Running Setup
 
-- First run the following command to build the container
+## Install Docker
+
 ```bash
-docker-compose build 
+sudo apt update
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+newgrp docker
+```
+*To Verify*
+```bash
+docker run hello-world
 ```
 
-- Now run the container with
+## X11 Forwarding 
+
 ```bash
-docker-compose run --rm -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=1 samurai-rl bash
+xhost +local:docker
 ```
 
-- Run the Samurai bot evaluation file with
+## Clone Repo
 ```bash
-python SamuraiProject/eval_samurai.py
+git clone https://github.com/MukulRay1603/RoboticParry-PPO.git
+cd RoboticParry-PPO
 ```
+
+## Build Docker Image
+- No compose
+- No http+docker
+- Uses Docker CLI only
+- Ubuntu 22.04 friendly
+
+```bash
+docker build -t samurai-ppo .
+```
+
+## Run with X11 forwarding 
+```bash
+docker run -it --rm \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  samurai-ppo
+```
+
+---
+
+### EXPECTED OUTPUT
+
+Select Mode:
+1 - Dry Run
+2 - Steady Defence
+3 - Evasion
+
 ---
 
  # ⚙️ Installation  & Environment Setup (Windows + UV) without docker
