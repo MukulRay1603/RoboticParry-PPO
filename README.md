@@ -73,7 +73,7 @@ xhost +local:docker
 ```
 
 
-##Clone repo
+## Clone repo
 ```bash
 git clone https://github.com/MukulRay1603/RoboticParry-PPO.git
 ```
