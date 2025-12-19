@@ -1,0 +1,17 @@
+# Core numerics
+numpy==2.1.2
+
+# Reinforcement learning
+gymnasium==0.29.1
+stable-baselines3==2.2.1
+
+# Physics / rendering
+pybullet==3.2.7
+pygame==2.6.1
+
+# Utilities actually used at runtime
+opencv-python==4.12.0.88
+matplotlib==3.10.7
+cloudpickle==3.1.2
+psutil==7.1.3
+tqdm==4.67.1
