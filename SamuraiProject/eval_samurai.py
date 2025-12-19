@@ -16,11 +16,12 @@ PyBullet window stays open until you close it or press Ctrl+C.
 import argparse
 import os
 import time
+import sys
 
 import numpy as np
 from stable_baselines3 import PPO
 
-from samurai_env import SamuraiParryEnv
+#from samurai_env import SamuraiParryEnv
 
 
 def main():
