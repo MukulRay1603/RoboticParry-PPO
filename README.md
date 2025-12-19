@@ -72,6 +72,12 @@ with X11 forwarding enabled (tested on Ubuntu 22.04+).
 xhost +local:docker
 ```
 
+
+##Clone repo
+```bash
+git clone https://github.com/MukulRay1603/RoboticParry-PPO.git
+```
+
 ## Build the Docker image
 ```bash
 docker build -t samurai-ppo .
